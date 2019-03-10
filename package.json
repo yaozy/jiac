@@ -1,0 +1,29 @@
+{
+  "name": "jiac",
+  "version": "1.0.0",
+  "description": "a simple js and css compress tool",
+  "main": "build.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaozy/jiac.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yaozy/jiac/issues"
+  },
+  "homepage": "https://github.com/yaozy/jiac#readme",
+  "dependencies": {
+    "clean-css": "^4.2.1",
+    "less": "^3.8.1",
+    "uglify-js": "^3.4.9",
+    "xmldom": "^0.1.27"
+  }
+}
