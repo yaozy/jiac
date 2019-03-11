@@ -14,9 +14,9 @@ const loads = Object.create(null);
 
 loads.js = function (next, data, files, list, index) {
 
-    let text = compress(list[index]).replace(/'/g, "\\'");
-
-    list[index] = "jiac.cache('" + files[index] + "', '" + text + "');\n";
+    list[index] = "jiac.module('" + files[index] + "', function (require, exports, module) {\n\n\n\t" 
+        + list[index].replace(/\n/g, '\n\t')
+        + "\n});\n\n\n\n";
 
     loadModule(next, data, files, list, index + 1);
 }
@@ -31,7 +31,7 @@ loads.json = function (next, data, files, list, index) {
 
     let text = JSON.stringify(JSON.parse(list[index])).replace(/'/g, "\\'");
 
-    list[index] = "jiac.cache('" + files[index] + "', '" + text + "');\n";
+    list[index] = "jiac.module('" + files[index] + "', '" + text + "');\n\n\n\n";
 
     loadModule(next, data, files, list, index + 1);
 }
@@ -41,9 +41,15 @@ loads.html = function (next, data, files, list, index) {
 
     let text = template(list[index]);
 
-    text =  text.replace(/[\t\n]+/g, '').replace(/'/g, "\\'");
-
-    list[index] = "jiac.cache('" + files[index] + "', '" + text + "');\n";
+    list[index] = "jiac.module('" + files[index] + "', function (data) {\n\n" + [
+        '\tvar __k = jiac.classes;\n',
+        '\tvar color = jiac.color;\n\n',
+        '\twith (data)\n\t{\n',
+        '\t\treturn ',
+        text.replace(/\n/g, '\n\t\t'),
+        '\n\t}',
+        '\n});\n\n\n\n',
+    ].join('');
 
     loadModule(next, data, files, list, index + 1);
 }
@@ -55,7 +61,7 @@ loads.less = function (next, data, files, list, index) {
 
         let text = output.css.replace(/'/g, "\\'");
 
-        list[index] = "jiac.cache('" + files[index] + "', '" + text + "');\n";
+        list[index] = "jiac.module('" + files[index] + "', '" + text + "');\n\n\n\n";
 
         loadModule(next, data, files, list, index + 1);
 

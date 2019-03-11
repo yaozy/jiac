@@ -5,4 +5,4 @@ global.DOMParser = require('xmldom').DOMParser;
 
 require('../client/template')
 
-module.exports = jiac.template;
+module.exports = jiac.htmlTemplate;
