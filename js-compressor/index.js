@@ -100,13 +100,6 @@ function loadModule(next, data, files, list, index) {
 
 function convertPath(path, files) {
 
-    path = require('path').join(process.cwd(), path).replace(/\\/g, '/');
-
-    if (path[path.length - 1] !== '/')
-    {
-        path += '/';
-    }
-
     for (let i = files.length; i--;)
     {
         files[i] = files[i].replace(/\\/g, '/').replace(path, '');
@@ -120,13 +113,30 @@ function convertPath(path, files) {
 module.exports = class JSCompressor extends Compressor {
 
 
-    module(root, base, files) {
+    constructor(root) {
 
-        if (!files)
+        super();
+
+        let path = process.cwd();
+
+        if (root)
         {
-            files = base;
-            base = '';
+            path = require('path').join(path, root);
         }
+
+        path = path.replace(/\\/g, '/');
+
+        if (path[path.length - 1] !== '/')
+        {
+            path += '/';
+        }
+
+        this.root = path;
+    }
+
+
+    // 模块
+    module(files) {
 
         if (typeof files === 'string')
         {
@@ -137,11 +147,11 @@ module.exports = class JSCompressor extends Compressor {
 
             let list = [];
 
-            combine(list, base, files);
+            combine(list, files);
 
             if (list.length > 0)
             {
-                let files = convertPath(root, list.files);
+                let files = convertPath(this.root, list.files);
 
                 loadModule(next, data, files, list, 0);
             }
@@ -153,13 +163,39 @@ module.exports = class JSCompressor extends Compressor {
     }
 
 
-    html(root, base, files) {
-
-        if (!files)
+    // 全局js
+    globalJS(files) {
+        
+        if (typeof files === 'string')
         {
-            files = base;
-            base = '';
+            files = [files];
         }
+        
+        return this.registry((next, data) => {
+
+            let list = [];
+
+            combine(list, files);
+
+            if (list.length > 0)
+            {
+                let files = convertPath(this.root, list.files);
+
+                for (let i = 0, l = list.length; i < l; i++)
+                {
+                    list[i] = list[i] + "\njiac.data('" + files[i] + "', true);\n\n\n";
+                }
+
+                data.push.apply(data, list);
+            }
+
+            next.resolve(data);
+        });
+    }
+
+
+    // 文本数据
+    text(files, parse) {
 
         if (typeof files === 'string')
         {
@@ -170,23 +206,36 @@ module.exports = class JSCompressor extends Compressor {
 
             let list = [];
 
-            combine(list, base, files);
+            combine(list, files);
 
             if (list.length > 0)
             {
-                let files = convertPath(root, list.files);
+                let files = convertPath(this.root, list.files);
 
                 for (let i = 0, l = list.length; i < l; i++)
                 {
-                    let text = list[i].replace(/[\r\n]\s*/g, '').replace(/'/g, "\\\'");
+                    let text = list[i];
+                    
+                    if (parse)
+                    {
+                        if (parse === 'html')
+                        {
+                            text = text.replace(/[\r\n]\s*/g, '');
+                        }
+                        else if (typeof parse === 'function')
+                        {
+                            text = parse(text);
+                        }
+                    }
 
-                    list[i] = "jiac.cache('" + files[i] + "', '" + text + "');\n";
+                    text = text.replace(/'/g, "\\\'");
+                    list[i] = "jiac.data('" + files[i] + "', '" + text + "');\n";
                 }
+                
+                data.push.apply(data, list);
             }
-            else
-            {
-                next.resolve(data);
-            }
+
+            next.resolve(data);
         });
     }
 

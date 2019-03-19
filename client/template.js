@@ -21,7 +21,7 @@
             case 'Ref':
             case 'Require':
             case 'Reference':
-                array.push(space, '"Class": jiac.loadModule(this, "', node.getAttribute('src'), '")');
+                array.push(space, '"Class": jiac.load(this, "', node.getAttribute('src'), '")');
                 node.removeAttribute('src');
                 break;
 

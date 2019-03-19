@@ -11,13 +11,13 @@
 
 
     // 全局require
-    var global = window.require = factory(location.href.substring(0, location.href.lastIndexOf('/')));
+    var require = window.require = factory(location.href);
 
-	// 已加载的模块集合
-	var modules = jiac.modules = create(null);
+	// 模块缓存
+	var cache = jiac.cache = create(null);
 
     // 注册的模块
-    var cache = jiac.cache = create(null);
+    var modules = jiac.modules = create(null);
 
     // 多语言模块
     var languages = jiac.languages = create(null);
@@ -33,8 +33,10 @@
     var handlers = create(null);
 
 
+
     // 默认版本号
-    var version = ('' + Math.random()).replace('0.', '')
+    var version = ('' + Math.random()).replace('0.', '');
+
 
     // 文件对应版本号
     jiac.versions = create(null);
@@ -46,22 +48,80 @@
 
         function require(url, flags) {
 
-            return jiac.loadModule(require.base, url, flags);
+            return load(require.base, url, flags);
         }
 
-        require.base = require.baseURL = base;
+        require.base = require.baseURL = base.substring(0, base.lastIndexOf('/'));
         require.runAsThread = runAsThread;
 
         return require;
     }
 
 
-    // 作为线程运行
-    function runAsThread(fn) {
+    function load(base, url, flags) {
 
-        return new jiac.Thread(global.base, this.base, fn);
+        var ext = exts[url] || checkURL(url),
+            any,
+            fn;
+
+        url = absolute(base, ext[1]);
+        ext = ext[0];
+
+        if (any = cache[url])
+        {
+            return any.exports;
+        }
+
+        if (url.indexOf('{{language}}') >= 0)
+        {
+            languages[url] = ext;
+            any = url.replace('{{language}}', jiac.language);
+        }
+        else
+        {
+            any = url;
+        }
+
+        if (fn = handlers[ext])
+        {
+            return (cache[url] = fn(any, flags)).exports;
+        }
+
+        return (cache[url] = {
+
+            exports: modules[any] || ajax(any)
+            
+        }).exports;
+    }
+    
+
+    function checkURL(url) {
+
+        var ext;
+
+        if (ext = url.match(/(?!\.)\w+$/))
+        {
+            return exts[url] = [ext[0].toLowerCase(), url];
+        }
+
+        return exts[url] = ['js', url + '.js'];
     }
 
+
+    function absolute(base, url) {
+
+        // 相对根目录
+        if (url[0] === '/')
+        {
+            base = require.base;
+            return base + (base[base.length - 1] === '/' ? url.substring(1) : url);
+        }
+
+        // 相对当前目录
+        url = (base[base.length - 1] === '/' ? base : base + '/') + url;
+
+        return urls[url] || (urls[url] = relative(url));
+    }
 
 
     function relative(url) {
@@ -81,22 +141,6 @@
         }
         
         return url.replace(/[.]+\//g, '');
-    }
-
-
-    function absolute(base, url) {
-
-        // 相对根目录
-        if (url[0] === '/')
-        {
-            base = global.base;
-            return base + (base[base.length - 1] === '/' ? url.substring(1) : url);
-        }
-
-        // 相对当前目录
-        url = (base[base.length - 1] === '/' ? base : base + '/') + url;
-
-        return urls[url] || (urls[url] = relative(url));
     }
 
 
@@ -126,19 +170,36 @@
 
         xhr.send(null);
 
-        return text;
+        return modules[url] = text;
+    }
+
+
+    // 作为线程运行
+    function runAsThread(url) {
+
+        var text;
+
+        url = absolute(this.base, (exts[url] || checkURL(url))[1]);
+        text = modules[url] || ajax(url);
+
+        if (text)
+        {
+            return new Thread(require.base, this.base, text);
+        }
+
+        throw url + ' has no any code!';
     }
 
 
     handlers.css = function (url) {
 
-        var text = cache[url] || ajax(url),
+        var text = modules[url] || ajax(url),
             dom = document.createElement('style'),
             color = jiac.color;  
 
         dom.setAttribute('type', 'text/css');  
 
-        text = text.replace(/@([\w-]+)/g, function (text, key) {
+        text = text.replace(/color-([\w-]+)/g, function (text, key) {
 
             return color && color[key] || text;
         });
@@ -163,29 +224,29 @@
         var module = { exports: {} },
             any;
 
-        if (any = cache[url])
+        if (any = modules[url])
         {
-            any(
-                factory(url.substring(0, url.lastIndexOf('/') + 1)),
-                module.exports,
-                module);
+            if (typeof any === 'function')
+            {
+                any(factory(url), module.exports, module);
+                return module;
+            }
         }
-        else if (any = ajax(url))
+        else if (!(any = ajax(url)))
         {
-            any = any + '\n//# sourceURL=' + url;
+            return module;
+        }
 
-            // 全局执行
-            if (flags === false)
-            {
-                eval.call(window, any);
-            }
-            else
-            {
-                new Function(['require', 'exports', 'module'], any)(
-                    factory(url.substring(0, url.lastIndexOf('/') + 1)),
-                    module.exports,
-                    module);
-            }
+        any = any + '\n//# sourceURL=' + url;
+
+        // 全局执行
+        if (flags === false)
+        {
+            eval.call(window, any);
+        }
+        else
+        {
+            new Function(['require', 'exports', 'module'], any)(factory(url), module.exports, module);
         }
 
 		return module;
@@ -194,7 +255,7 @@
 
     handlers.json = function (url) {
 
-        var text = cache[url] || ajax(url);
+        var text = modules[url] || ajax(url);
 
         return { 
             exports: text ? JSON.parse(text) : null 
@@ -204,16 +265,21 @@
 
     handlers.html = function (url, flags) {
 
-        var any = cache[url];
+        var any = modules[url];
 
         if (any)
         {
-            return {
-                exports: any.bind(url.substring(0, url.lastIndexOf('/')))
-            };
+            if (typeof any === 'function')
+            {
+                return {
+                    exports: any.bind(url.substring(0, url.lastIndexOf('/')))
+                };
+            }
         }
-
-        any = ajax(url);
+        else
+        {
+            any = ajax(url);
+        }
 
         if (flags === false)
         {
@@ -237,67 +303,25 @@
 
 
     // 相对路径转绝对路径
-    jiac.absoluteUrl = absolute;
+    jiac.path = absolute;
 
     
     // 加载模块
-    jiac.loadModule = function (base, url, flags) {
-
-        var ext = exts[url],
-            any;
-
-        if (ext)
-        {
-            url = ext[1];
-            ext = ext[0];
-        }
-        else
-        {
-            if (ext = url.match(/(?!\.)\w+$/))
-            {
-                exts[url] = [ext = ext[0].toLowerCase(), url];
-            }
-            else
-            {
-                exts[url] = [ext = 'js', url += '.js'];
-            }
-        }
-
-        url = absolute(base, url);
-
-        if (any = modules[url])
-        {
-            return any.exports;
-        }
-
-        if (url.indexOf('{{language}}') >= 0)
-        {
-            languages[url] = ext;
-            any = url.replace('{{language}}', jiac.language);
-        }
-        else
-        {
-            any = url;
-        }
-
-        if (any = handlers[ext])
-        {
-            return (modules[url] = any(url, flags)).exports;
-        }
-
-        return (modules[url] = {
-
-            exports: cache[url] || ajax(url)
-            
-        }).exports;
-    }
+    jiac.load = load;
 
 
 
     // 注册模块
     jiac.module = function (url, content) {
 
-        cache[absolute(global.base, url)] = content;
+        modules[absolute(require.base, url)] = content;
+    }
+
+
+    // 缓存数据
+    jiac.data = function (url, data) {
+
+        cache[absolute(require.base, url)] = { exports: data };
     }
 
     
@@ -309,26 +333,25 @@
     // 切换语言
     jiac.switchLanguage = function (language) {
 
+        var url, any;
+
         jiac.language = language;
         jiac.i18n = languages[language] || languages['en-US'];
 
         for (var key in languages)
         {
-            var url = key.replace('{{language}}', language),
-                data = ajax(url);
+            url = key.replace('{{language}}', language);
 
-            switch (languages[key])
+            if (any = handlers[languages[key]])
             {
-                case '.js':
-                    data = loadJs(data, url).exports;
-                    break;
-
-                case '.json':
-                    data = data ? JSON.parse(text) : null;
-                    break;
+                any = any(url).exports;
+            }
+            else
+            {
+                any = modules[any] || ajax(any)
             }
 
-            mixin(modules[key].exports, data);
+            mixin(cache[key].exports, any);
         }
     }
 
@@ -348,6 +371,370 @@
                 target[key] = value;
             }
         }
+    }
+
+
+
+
+    // 线程注入代码
+    var inject = '' + function () {
+
+
+        var create = Object.create;
+
+
+        // 全局变量
+        var jiac = self.jiac = create(null);
+
+
+        // 全局require
+        var require = factory(base[base.length - 1] === '/' ? base : base + '/');
+
+        
+
+        // 模块缓存
+        var cache = jiac.cache = create(null);
+
+        // 注册的模块
+        var modules = jiac.modules = create(null);
+
+
+        // 相对url缓存
+        var urls = create(null);
+
+        // 扩展名缓存
+        var exts = create(null);
+
+
+        // 模块处理
+        var handlers = create(null);
+
+
+            
+        function factory(base) {
+
+            function require(url, flags) {
+
+                return load(require.base, url, flags);
+            }
+
+            require.base = require.baseURL = base.substring(0, base.lastIndexOf('/'));
+            return require;
+        }
+
+
+        function load(base, url, flags) {
+
+            var ext = exts[url] || checkURL(url),
+                any;
+
+            url = absolute(base, ext[1]);
+            ext = ext[0];
+
+            if (any = cache[url])
+            {
+                return any.exports;
+            }
+
+            if (any = handlers[ext])
+            {
+                return (cache[url] = any(url, flags)).exports;
+            }
+
+            return (cache[url] = {
+
+                exports: modules[url] || ajax(url)
+                
+            }).exports;
+        }
+        
+
+        function checkURL(url) {
+
+            var ext;
+
+            if (ext = url.match(/(?!\.)\w+$/))
+            {
+                return exts[url] = [ext[0].toLowerCase(), url];
+            }
+
+            return exts[url] = ['js', url + '.js'];
+        }
+
+
+        function absolute(base, url) {
+
+            // 相对根目录
+            if (url[0] === '/')
+            {
+                base = root;
+                return base + (base[base.length - 1] === '/' ? url.substring(1) : url);
+            }
+
+            // 相对当前目录
+            url = (base[base.length - 1] === '/' ? base : base + '/') + url;
+
+            return urls[url] || (urls[url] = relative(url));
+        }
+
+
+        function relative(url) {
+
+            var last;
+
+            while (true)
+            {
+                last = url.replace(/[^/]*\/\.\.\//, '');
+                
+                if (last === url)
+                {
+                    break;
+                }
+                
+                url = last;
+            }
+            
+            return url.replace(/[.]+\//g, '');
+        }
+
+
+        function ajax(url) {
+
+            var xhr = new XMLHttpRequest(),
+                text;
+  
+            xhr.open('GET', url + '?v=' + (versions[url] || version), false);
+    
+            xhr.onreadystatechange = function () {
+    
+                if (this.readyState === 4)
+                {
+                    if (this.status < 300)
+                    {
+                        text = this.responseText;
+                    }
+                    else
+                    {
+                        throw this.statusText;
+                    }
+                    
+                    this.onreadystatechange = null;
+                }
+            }
+    
+            xhr.send(null);
+
+            return modules[url] = text;
+        }
+
+
+        handlers.js = function (url, flags) {
+
+            var module = { exports: {} },
+                any;
+
+            if (any = modules[url])
+            {
+                any(
+                    factory(url.substring(0, url.lastIndexOf('/') + 1)),
+                    module.exports,
+                    module);
+            }
+            else if (any = ajax(url))
+            {
+                any = any + '\n//# sourceURL=' + url;
+
+                // 全局执行
+                if (flags === false)
+                {
+                    eval.call(self, any);
+                }
+                else
+                {
+                    new Function(['require', 'exports', 'module'], any)(
+                        factory(url.substring(0, url.lastIndexOf('/') + 1)),
+                        module.exports,
+                        module);
+                }
+            }
+
+            return module;
+        }
+
+
+        handlers.json = function (url) {
+
+            var text = modules[url] || ajax(url);
+
+            return { 
+                exports: text ? JSON.parse(text) : null 
+            };
+        }
+
+
+
+        // 注册模块
+        jiac.module = function (url, content) {
+
+            modules[absolute(require.base, url)] = content;
+        }
+
+
+        // 缓存数据
+        jiac.data = function (url, data) {
+
+            cache[absolute(require.base, url)] = { exports: data };
+        }
+
+        
+
+        function reply(uuid, value, e) {
+
+            self.postMessage(JSON.stringify([uuid, value, e]));
+        }
+        
+
+        self.addEventListener('message', function (event) {
+            
+            var target = this,
+                data = event.data,
+                uuid = data.uuid,
+                method = data.method,
+                index = 0,
+                list = method.split('.'),
+                name,
+                fn;
+
+            try
+            {
+                name = list.pop();
+
+                while (target && (fn = list[index++]))
+                {
+                    target = target[fn];
+                }
+
+                if (target && (fn = target[name]))
+                {
+                    list = data.args || [];
+
+                    if (data.async)
+                    {
+                        list.push(function (value, e) {
+
+                            reply(uuid, value, e);
+                        });
+
+                        fn.apply(target, list);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            reply(uuid, fn.apply(target, list));
+                        }
+                        catch (e)
+                        {
+                            reply(uuid, null, e);
+                        }
+                    }
+                }
+                else
+                {
+                    reply(uuid, null, 'not support method "' + method + '"!');
+                }
+            }
+            catch (e)
+            {
+                reply(uuid, null, e);
+            }
+        });
+
+
+        return require;
+
+    };
+
+
+    inject = inject.substring(inject.indexOf('{') + 1);
+    inject = inject.substring(0, inject.lastIndexOf('}'));
+
+
+
+    // 线程调用id
+    var seed = 1;
+
+    var versions;
+
+
+
+    function Thread(root, base, text) {
+
+        var list = ['var require = function (self, root, base, versions, version) {\n',
+            inject, 
+            '\n}(self, "', 
+                root[root.length - 1] !== '/' ? root : root.slice(0, -1),  '", "', 
+                base, '", ',
+                versions || (versions = JSON.stringify(jiac.versions)), ', "',
+                version,
+            '");\n\n\n\n\n'];
+
+        list.push(text);
+        list = [list.join('')];
+
+        this.queue = [];
+        this.worker = new Worker(URL.createObjectURL(new Blob(list)));
+        this.worker.onmessage = onmessage.bind(this);
+    }
+
+    
+    function onmessage(event) {
+
+        var data;
+
+        if (data = event.data)
+        {
+            var queue = this.queue,
+                index = 0,
+                uuid = (data = JSON.parse(data))[0],
+                item;
+
+            while (item = queue[index])
+            {
+                if (item === uuid)
+                {
+                    queue[index + 1].call(this, data[1], data[2]);
+                    queue.splice(index, 2);
+                    return;
+                }
+
+                index += 2;
+            }
+        }
+    }
+
+
+    Thread.prototype.exec = function (method, args, callback, async) {
+
+        if (method)
+        {
+            var uuid = seed++;
+
+            this.queue.push(uuid, callback);
+
+            this.worker.postMessage({
+                uuid: uuid,
+                method: method,
+                args: args,
+                async: async
+            });
+        }
+    }
+
+
+    Thread.prototype.terminate = function () {
+
+        this.worker.terminate();
     }
 
 

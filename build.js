@@ -2,7 +2,9 @@ const Compressor = require('./js-compressor');
 
 
 new Compressor()
-    .load('client/(require|thread|template).js')
+    .load('client/(require|template).js')
     .combine()
-    // .compress()
-    .output('client/jiac.1.0.js');
+    .output('client/jiac.1.0.js')
+    
+    .compress()
+    .output('client/jiac.1.0.min.js');
