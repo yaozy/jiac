@@ -1,7 +1,7 @@
 {
   "name": "jiac",
   "version": "1.0.0",
-  "description": "a simple js and css compress tool",
+  "description": "web module and compress tool",
   "main": "build.js",
   "directories": {
     "lib": "lib"
