@@ -1,8 +1,13 @@
-const jiac = require('./lib');
+const Compressor = require('./js-compressor');
 
 
-jiac.js
-    .module('', 'client/(require|thread|template).js')
+new Compressor()
+    .load('client/(require|thread|template).js')
     .combine()
-    .compress()
-    .output('client/jiac.1.0.js');
+    // .compress()
+    .output('client/jiac.js');
+
+
+const dispatch = require('./dispatch');
+
+dispatch('./client', './dist');

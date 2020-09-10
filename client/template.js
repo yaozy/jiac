@@ -21,7 +21,7 @@
             case 'Ref':
             case 'Require':
             case 'Reference':
-                array.push(space, '"Class": jiac.loadModule(__dirname, "', node.getAttribute('src'), '")');
+                array.push(space, '"Class": jiac.loadModule(this, "', node.getAttribute('src'), '")');
                 node.removeAttribute('src');
                 break;
 
@@ -261,7 +261,7 @@
 
 
     
-    jiac.template = function (text) {
+    jiac.htmlTemplate = function (text) {
 
         var node = new DOMParser().parseFromString(text, 'text/xml').documentElement,
             array = ['{\n'];
