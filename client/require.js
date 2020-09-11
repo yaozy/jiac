@@ -34,17 +34,15 @@
     // 默认版本号
     var version = ('' + Math.random()).replace('0.', '')
 
-    // 文件对应版本号
-    jiac.versions = create(null);
 
 
 
 
     function factory(base) {
 
-        function require(url, flags) {
+        function require(url) {
 
-            return jiac.loadModule(require.base, url, flags);
+            return jiac.loadModule(require.base, url);
         }
 
         require.base = require.baseURL = base;
@@ -103,7 +101,7 @@
         var xhr = new XMLHttpRequest(),
             text;
 
-		xhr.open('GET', url + '?v=' + (jiac.versions[url] || version), false);
+		xhr.open('GET', url + '?v=' + version, false);
 
         xhr.onreadystatechange = function () {
 
@@ -128,35 +126,7 @@
     }
 
 
-    handlers.css = function (url) {
-
-        var text = cache[url] || ajax(url),
-            dom = document.createElement('style'),
-            color = jiac.color;  
-
-        dom.setAttribute('type', 'text/css');  
-
-        text = text.replace(/@([\w-]+)/g, function (text, key) {
-
-            return color && color[key] || text;
-        });
-    
-        if (dom.styleSheet) // IE  
-        {
-            dom.styleSheet.cssText = text;  
-        }
-        else // w3c  
-        {
-            dom.appendChild(document.createTextNode(text));  
-        }
-    
-        document.head.appendChild(dom);
-
-        return { exports: true };
-    }
-
-
-    handlers.js = function (url, flags) {
+    handlers.js = function (url) {
 
         var module = { exports: {} },
             any;
@@ -172,18 +142,10 @@
         {
             any = any + '\n//# sourceURL=' + url;
 
-            // 全局执行
-            if (flags === false)
-            {
-                eval.call(window, any);
-            }
-            else
-            {
-                new Function(['require', 'exports', 'module'], any)(
-                    factory(url.substring(0, url.lastIndexOf('/') + 1)),
-                    module.exports,
-                    module);
-            }
+            new Function(['require', 'exports', 'module'], any)(
+                factory(url.substring(0, url.lastIndexOf('/') + 1)),
+                module.exports,
+                module);
         }
 
 		return module;
@@ -206,7 +168,7 @@
 
     
     // 加载模块
-    jiac.loadModule = function (base, url, flags) {
+    jiac.loadModule = function (base, url) {
 
         var ext = exts[url],
             any;
@@ -216,16 +178,13 @@
             url = ext[1];
             ext = ext[0];
         }
+        else if (any = url.match(/\.json$|\.js$/))
+        {
+            exts[url] = [ext = any[0].substring(1), url];
+        }
         else
         {
-            if (ext = url.match(/(?!\.)\w+$/))
-            {
-                exts[url] = [ext = ext[0].toLowerCase(), url];
-            }
-            else
-            {
-                exts[url] = [ext = 'js', url += '.js'];
-            }
+            exts[url] = [ext = 'js', url += '.js'];
         }
 
         url = absolute(base, url);
@@ -235,18 +194,7 @@
             return any.exports;
         }
 
-        any = url;
-
-        if (any = handlers[ext])
-        {
-            return (modules[url] = any(url, flags)).exports;
-        }
-
-        return (modules[url] = {
-
-            exports: cache[url] || ajax(url)
-            
-        }).exports;
+        return (modules[url] = handlers[ext](url)).exports;
     }
 
 

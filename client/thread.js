@@ -4,8 +4,6 @@ jiac.Thread = (function () {
 
     var seed = 1;
 
-    var versions;
-
 
 
     var inject = '' + function () {
@@ -46,16 +44,13 @@ jiac.Thread = (function () {
         // 默认版本号
         var version = ('' + Math.random()).replace('0.', '')
 
-        // 传入的版本号
-        versions = versions ? JSON.parse(versions) : {};
-
         
         
         function factory(base) {
 
-            function require(url, flags) {
+            function require(url) {
     
-                return load(require.base, url, flags);
+                return load(require.base, url);
             }
     
             require.base = require.baseURL = base;
@@ -103,7 +98,7 @@ jiac.Thread = (function () {
             var xhr = new XMLHttpRequest(),
                 text;
   
-            xhr.open('GET', url + '?v=' + (versions[url] || version), false);
+            xhr.open('GET', url + '?v=' + version, false);
     
             xhr.onreadystatechange = function () {
     
@@ -128,7 +123,7 @@ jiac.Thread = (function () {
         }
 
 
-        function load(base, url, flags) {
+        function load(base, url) {
 
             var ext = exts[url],
                 any;
@@ -138,16 +133,13 @@ jiac.Thread = (function () {
                 url = ext[1];
                 ext = ext[0];
             }
+            else if (any = url.match(/\.json$|\.js$/))
+            {
+                exts[url] = [ext = any[0].substring(1), url];
+            }
             else
             {
-                if (ext = url.match(/\.\w+$/))
-                {
-                    exts[url] = [ext = ext[0].toLowerCase(), url];
-                }
-                else
-                {
-                    exts[url] = [ext = '.js', url += '.js'];
-                }
+                exts[url] = [ext = 'js', url += '.js'];
             }
 
             url = absolute(base, url);
@@ -157,21 +149,12 @@ jiac.Thread = (function () {
                 return any.exports;
             }
 
-            if (any = handlers[ext])
-            {
-                return (modules[url] = any(url, flags)).exports;
-            }
-    
-            return (modules[url] = {
-    
-                exports: cache[url] || ajax(url)
-                
-            }).exports;
+            return (modules[url] = handlers[ext](url)).exports;
         }
 
 
 
-        handlers.js = function (url, flags) {
+        handlers.js = function (url) {
 
             var module = { exports: {} },
                 any;
@@ -187,18 +170,10 @@ jiac.Thread = (function () {
             {
                 any = any + '\n//# sourceURL=' + url;
 
-                // 全局执行
-                if (flags === false)
-                {
-                    eval.call(window, any);
-                }
-                else
-                {
-                    new Function(['require', 'exports', 'module'], any)(
-                        factory(url.substring(0, url.lastIndexOf('/') + 1)),
-                        module.exports,
-                        module);
-                }
+                new Function(['require', 'exports', 'module'], any)(
+                    factory(url.substring(0, url.lastIndexOf('/') + 1)),
+                    module.exports,
+                    module);
             }
 
             return module;
@@ -292,17 +267,16 @@ jiac.Thread = (function () {
 
     function Thread(root, base, url) {
 
-        var list = ['var require = function (self, root, base, versions) {\n',
+        var list = ['var require = function (self, root, base) {\n',
             inject, 
             '\n}(self, "', 
                 root[root.length - 1] !== '/' ? root : root.slice(0, -1),  '", "', 
                 base, '", "',
-                versions || (versions = JSON.stringify(jiac.versions)),
             '");\n\n\n\n\n'];
 
         if (typeof url === 'string')
         {
-            list.push('require("' + url + '", false);');
+            list.push('require("' + url + '");');
         }
         else
         {
