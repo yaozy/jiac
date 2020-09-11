@@ -4,7 +4,11 @@ const combine = require('../lib/combine');
 
 const compress = require('./compress')
 
-const template = require('./template');
+
+
+global.DOMParser = require('xmldom').DOMParser;
+
+const template = require('../lib/template');
 
 
 
@@ -39,17 +43,9 @@ loads.json = function (next, data, files, list, index) {
 
 loads.html = function (next, data, files, list, index) {
 
-    let text = template(list[index]);
-
-    list[index] = "jiac.module('" + files[index] + "', function (data) {\n\n" + [
-        '\tvar __k = jiac.classes;\n',
-        '\tvar color = jiac.color;\n\n',
-        '\twith (data)\n\t{\n',
-        '\t\treturn ',
-        text.replace(/\n/g, '\n\t\t'),
-        '\n\t}',
-        '\n});\n\n\n\n',
-    ].join('');
+    list[index] = "jiac.module('" + files[index] + "', function (require, exports, module) {\n\n\n\t" 
+        + template(list[index]).replace(/\n/g, '\n\t')
+        + "\n});\n\n\n\n";
 
     loadModule(next, data, files, list, index + 1);
 }

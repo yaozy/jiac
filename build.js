@@ -2,12 +2,16 @@ const Compressor = require('./js-compressor');
 
 
 new Compressor()
-    .load('client/(require|thread|template).js')
+    .load('client/(require|thread).js')
     .combine()
     // .compress()
     .output('client/jiac.js');
 
 
-const dispatch = require('./dispatch');
+const Watcher = require('./watcher');
 
-dispatch('./client', './dist');
+
+new Watcher('./client', './dist')
+    .template(/\.html$/i)
+    .syncDir()
+    .watch();

@@ -1,0 +1,34 @@
+<Page style="height:100%;position: relative">
+    <Header>
+        <BackButton />
+        <Panel key="entrustTitle" style="text-align: center;width: 100%">
+            <Text d-text="'当前委托'" e-tap="tapCurr" theme="primary" style="padding-right: .2rem"/>
+            <Text d-text="'历史委托'" e-tap="tapHis" />
+        </Panel>
+    </Header>
+    <Ref src="./test" />
+    <Content style="position: absolute;top:.5rem;bottom:0;">
+        <Panel layout="same-width" style="position: absolute;top:0;width:100%;z-index:1;">
+            <Panel style="position: relative;padding-right: .01rem;">
+                <Panel layout="line-middle" style="text-align: center" e-tap="tapCoinPairs">
+                    <Text key="coinsTitle" d-text="type" />
+                    <Icon svg="icon-exchange-otc-zhankai" style="font-size: .12rem;padding-left: .05rem"/>
+                </Panel>
+                <Panel key="coins"></Panel>
+                <Panel key="coinDetails" style="position: absolute;width: 1.9rem;right: -1.9rem;top: .5rem"></Panel>
+            </Panel>
+            <Panel style="float: right;position: relative">
+                <Panel layout="line-middle" style="text-align: center" e-tap="tapTransType">
+                    <Text key="typesTitle" d-text="'全部'" style="color: @font-level3-color;"/>
+                    <Icon svg="icon-exchange-otc-zhankai" style="color: @font-level3-color; font-size: .12rem;padding-left: .05rem"/>
+                </Panel>
+                <Panel key="types" style="display: none;background: #ffecec">
+                    <Text e-tap="tapTypeDetails" d-text="'全部'" style="display: block;text-align: center;padding: .05rem 0"/>
+                    <Text e-tap="tapTypeDetails" d-text="'买入'" style="display: block;text-align: center;padding: .05rem 0"/>
+                    <Text e-tap="tapTypeDetails" d-text="'卖出'" style="display: block;text-align: center;padding: .05rem 0"/>
+                </Panel>
+            </Panel>
+        </Panel>
+        <R src="entrust-list.js" key="entrustList" d-coinPairCode="type" style="height: 100%;margin-top: .5rem"></R>
+    </Content>
+</Page>
