@@ -11,7 +11,8 @@ new Compressor()
 const Watcher = require('./watcher');
 
 
-new Watcher('./client', './dist')
+new Watcher('./test/inputs', './test/outputs', /\.(wx|h5)\.\w+/i)
     .template(/\.html$/i)
-    .syncDir()
+    .plugin(/\.css$/i, null, file => file.replace(/\.css$/i, '.wxss'))
+    .sync()
     .watch();

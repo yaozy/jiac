@@ -36,26 +36,42 @@ function loadFiles(dir, outputs) {
 module.exports = class Watcher {
 
 
-    constructor(sourcePath, targetPath, textPattern) {
+    constructor(sourcePath, targetPath, excludeRegexPattern, textRegexPattern) {
 
         this.sourcePath = path.join(cwd, sourcePath);
         this.targetPath = path.join(cwd, targetPath);
-        this.textPattern = textPattern || /\.(js|json|css|less|saas|txt|html|htm|xml|[a-z][a-z]ml|[a-z][a-z]ss|wxs)$/i;
+        this.excludeRegexPattern = excludeRegexPattern;
+        this.textRegexPattern = textRegexPattern || /\.(js|json|css|less|saas|txt|html|htm|xml|[a-z][a-z]ml|[a-z][a-z]ss|wxs)$/i;
         this.plugins = [];
     }
 
 
-    plugin(pattern, fn, ext) {
+    plugin(regexPattern, convertDataFn, convertFileFn) {
 
-        this.plugins.push(pattern, fn, ext);
-        return this;
+        if (regexPattern instanceof RegExp)
+        {
+            if (!convertDataFn && !convertFileFn)
+            {
+                throw 'plugin convertDataFn and convertFileFn can\'t be null both!';
+            }
+
+            this.plugins.push(regexPattern, convertDataFn, convertFileFn);
+            return this;
+        }
+
+        throw 'plugin regexPattern must be a Regex!';
     }
 
 
-    template(pattern) {
+    template(regexPattern) {
 
-        this.plugins.push(pattern, template, '.js');
-        return this;
+        if (regexPattern instanceof RegExp)
+        {
+            this.plugins.push(regexPattern, template, file => file + '.js');
+            return this;
+        }
+
+        throw 'template regexPattern must be a Regex!';
     }
 
 
@@ -65,7 +81,24 @@ module.exports = class Watcher {
 
             if (event === 'remove')
             {
-                fs.rmdirSync(file.replace(this.sourcePath, this.targetPath));
+                let plugins = this.plugins;
+                let index = 0;
+                let any;
+
+                file = file.replace(this.sourcePath, this.targetPath);
+
+                while (any = plugins[index])
+                {
+                    if (any.test(file) && (any = plugins[index + 2]))
+                    {
+                        file = plugins[index + 2](file) || file;
+                        break;
+                    }
+    
+                    index += 3;
+                }
+
+                fs.rmdirSync(file);
             }
             else
             {
@@ -77,7 +110,7 @@ module.exports = class Watcher {
     }
 
 
-    syncDir(sourcePath) {
+    sync(sourcePath) {
 
         let files = [];
 
@@ -100,32 +133,41 @@ module.exports = class Watcher {
         // 目录
         if (fs.statSync(sourceFile).isDirectory())
         {
-            return this.syncDir(sourceFile);
+            return this.sync(sourceFile);
+        }
+
+        if (this.excludeRegexPattern && this.excludeRegexPattern.test(sourceFile))
+        {
+            return;
         }
         
         // 只有文本类型的文件才支持插件处理
-        if (this.textPattern.test(sourceFile))
+        if (this.textRegexPattern.test(sourceFile))
         {
             let plugins = this.plugins;
             let index = 0;
-            let pattern;
+            let any;
 
             data = fs.readFileSync(sourceFile, 'utf8');
 
-            while (pattern = plugins[index++])
+            while (any = plugins[index])
             {
-                if (pattern.test(sourceFile))
+                if (any.test(sourceFile))
                 {
-                    data = plugins[index](data);
-
-                    if (plugins[index + 1])
+                    if (any = plugins[index + 1])
                     {
-                        file += plugins[index + 1];
+                        data = any(data);
                     }
+
+                    if (plugins[index + 2])
+                    {
+                        file = plugins[index + 2](file) || file;
+                    }
+
                     break;
                 }
 
-                index += 2;
+                index += 3;
             }
 
             fs.writeFileSync(file, data, 'utf8');
