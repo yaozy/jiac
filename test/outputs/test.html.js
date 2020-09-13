@@ -1,58 +1,68 @@
-module.exports = function (data) {
+module.exports = function (scope) {
 
 
-return {
-	"Class": "Panel",
-	"children": [
+with (scope) return (
+	[
+		"page",
 		{
-			"Class": "Band",
-			"children": [
+			"events": {
+				"tap": handleTap
+			}
+		},
+		[
+			[
+				"header",
 				{
-					"Class": "Swiper",
-					"children": [
+					"content": "yaxi test page"
+				}
+			],
+			[
+				"box",
+				null,
+				[
+					[
+						"button",
 						{
-							"Class": "Image",
-							"src": "/images/splash-screen.jpg"
-						},
+							"tag": "model.js"
+						}
+					],
+					[
+						"text",
+						null,
+						"open"
+					],
+					[
+						"text",
 						{
-							"Class": "Image",
-							"src": "/images/splash-screen.jpg"
-						},
+							"text": "model",
+							"theme": "danger-font",
+							"style": "margin-left:2em;font-weight:bold;"
+						}
+					],
+					[
+						"button",
 						{
-							"Class": "Image",
-							"src": "/images/splash-screen.jpg"
-						},
+							"tag": "test.js"
+						}
+					],
+					[
+						"text",
+						null,
+						"open"
+					],
+					[
+						"text",
 						{
-							"Class": "Image",
-							"src": "/images/splash-screen.jpg"
+							"text": "test",
+							"theme": "danger-font",
+							"style": "margin-left:2em;font-weight:bold;"
 						}
 					]
-				}
+				]
 			]
-		},
-		{
-			"Class": "Band",
-			"children": [
-				{
-					"Class": "Button",
-					"events": {
-						"tap": data.openPage
-					},
-					"content": "Open Page"
-				}
-			]
-		},
-		{
-			"Class": "Band"
-		},
-		{
-			"Class": "Band"
-		},
-		{
-			"Class": "Band"
-		}
+		]
 	]
-};
+)
 
 
 }
