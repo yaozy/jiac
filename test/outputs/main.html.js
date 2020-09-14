@@ -181,9 +181,7 @@ return (
 					"style": "height:100rem;margin-top:10rem;padding:10rem 20rem;"
 				},
 				[
-					[
-						require("./box-title.html").call({ icon: 'home-hot', text: '热门课程' })
-					],
+					require("./box-title.html").call({ icon: 'home-hot', text: '热门课程' }),
 					[
 						require("./test"),
 						{
