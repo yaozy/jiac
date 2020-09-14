@@ -1,7 +1,7 @@
 module.exports = function (scope) {
 
 
-with (scope) return (
+return (
 	[
 		"page",
 		{
