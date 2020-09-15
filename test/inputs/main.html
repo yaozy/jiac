@@ -1,4 +1,4 @@
-<!-- <box theme="level5-bg">
+<box theme="level5-bg">
     <swiper>
         <image src="/images/splash-screen.jpg" />
         <image src="/images/splash-screen.jpg" />
@@ -37,11 +37,11 @@
         <band key="hot"></band>
     </band>
     <band theme="level1" style="height:100rem;margin-top:10rem;padding:10rem 20rem;">
-        <template src="./box-title.html" data="{ icon: 'home-hot', text: '热门课程' }" />
-        <import src="./test" style="color:red;" />
+        <template src="./box-title.html" data="{ icon: 'home-hot', text: '热门课程' }" args="[1, 2]" />
+        <require src="./test" style="color:red;" />
         <band key="hot"></band>
     </band>
     <band style="margin-top:10rem;">
         <button e-tap="this.openTest">Open Test</button>
     </band>
-</box> -->
+</box>
