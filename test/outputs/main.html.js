@@ -5,265 +5,83 @@ return (
 	[
 		"box",
 		{
-			"theme": "level5-bg"
+			"tag": this.id,
+			"style": "height:160rem;margin:20rem 0;overflow:hidden;"
 		},
 		[
 			[
-				"swiper",
-				null,
-				[
-					[
-						"image",
-						{
-							"src": "/images/splash-screen.jpg"
-						}
-					],
-					[
-						"image",
-						{
-							"src": "/images/splash-screen.jpg"
-						}
-					],
-					[
-						"image",
-						{
-							"src": "/images/splash-screen.jpg"
-						}
-					],
-					[
-						"image",
-						{
-							"src": "/images/splash-screen.jpg"
-						}
-					]
-				]
-			],
-			[
-				"band",
+				"image",
 				{
-					"style": "height:60rem;"
+					"src": this.image,
+					"style": "width:200rem;height:100%;"
 				}
 			],
 			[
-				"band",
+				"box",
 				{
-					"theme": "level1",
-					"style": "height:100rem;margin-top:10rem;padding:10rem 20rem;"
+					"style": "display:inline-block;width:500rem;height:100%;padding-left:20rem;"
 				},
 				[
 					[
-						"button",
+						"band",
 						{
-							"theme": "level4",
-							"style": "line-height:80rem;border-radius:80rem;border:.5px solid @border-level4-color",
-							"events": {
-								"tap": this.this.handleSearch.bind(this)
-							}
+							"style": "height:80rem;overflow:hidden;"
 						},
 						[
 							[
-								"icon",
-								{
-									"icon": "common-search"
-								}
-							],
-							[
 								"text",
-								null,
-								"搜索老师、机构、课程"
-							]
-						]
-					]
-				]
-			],
-			[
-				"band",
-				{
-					"theme": "level1",
-					"style": "height:100rem;margin-top:10rem;padding:10rem 20rem;"
-				},
-				[
-					[
-						"band",
-						null,
-						[
-							[
-								"icon",
 								{
-									"icon": "home-hot"
+									"text": this.name
 								}
-							],
-							[
-								"text",
-								null,
-								"热门课程"
-							],
-							[
-								"box",
-								null,
-								[
-									[
-										"text",
-										null,
-										"查看更多"
-									],
-									[
-										"icon",
-										{
-											"icon": "common-more"
-										}
-									]
-								]
 							]
 						]
 					],
 					[
 						"band",
 						{
-							"key": "hot"
-						}
-					]
-				]
-			],
-			[
-				"band",
-				{
-					"theme": "level1",
-					"style": "height:100rem;margin-top:10rem;padding:10rem 20rem;"
-				},
-				[
-					[
-						"band",
-						null,
-						[
-							[
-								"icon",
-								{
-									"icon": "home-hot"
-								}
-							],
-							[
-								"text",
-								null,
-								"直播课程"
-							],
-							[
-								"box",
-								null,
-								[
-									[
-										"text",
-										null,
-										"查看更多"
-									],
-									[
-										"icon",
-										{
-											"icon": "common-more"
-										}
-									]
-								]
-							]
-						]
-					],
-					[
-						"band",
-						{
-							"key": "hot"
-						}
-					]
-				]
-			],
-			[
-				"band",
-				{
-					"theme": "level1",
-					"style": "height:100rem;margin-top:10rem;padding:10rem 20rem;"
-				},
-				[
-					require("./box-title.html").apply({ icon: 'home-hot', text: '热门课程' }, [1, 2]),
-					[
-						require("./test"),
-						{
-							"style": "color:red;"
-						}
-					],
-					[
-						"band",
-						{
-							"key": "hot"
-						}
-					]
-				]
-			],
-			[
-				"band",
-				{
-					"style": "margin-top:10rem;"
-				},
-				[
-					[
-						"button",
-						{
-							"events": {
-								"tap": this.openTest.bind(this)
-							}
+							"theme": "level3",
+							"style": "height:40rem;line-height:40rem;font-size:24rem;overflow:hidden;"
 						},
-						"Open Test"
-					]
-				]
-			],
-			[
-				"tab",
-				{
-					"host": "<* >@host",
-					"selected-index": "0"
-				},
-				[
-					[
-						"iconbutton",
-						{
-							"icon": "tabbar-home",
-							"content": "首页",
-							"module": this.require('home/main.js'),
-							"selected-status": { theme: 'primary' }
-						}
+						(function () {
+
+						    var __for_2_1 = this.remark;
+						    var __for_2_2 = [];
+
+						    for (var index = 0, __for_2_len = __for_2_1.length; index < __for_2_len; index++)
+						    {
+						        var item = __for_2_1[index];
+
+						        __for_2_2.push.apply(__for_2_2,
+									[
+										[
+											"text",
+											{
+												"text": this.item,
+												"theme": "bg-level5",
+												"style": "display:inline-block;border-radius:20rem;padding:0 20rem;margin-right:10rem;"
+											}
+										]
+									] || []);
+						    }
+
+						    return __for_2_2;
+
+						}).call(this)
 					],
 					[
-						"iconbutton",
+						"band",
 						{
-							"icon": "tabbar-lesson",
-							"content": "课程",
-							"module": this.require('lesson/main.js'),
-							"selected-status": { theme: 'primary' }
-						}
-					],
-					[
-						"iconbutton",
-						{
-							"icon": "tabbar-spread",
-							"content": "推广",
-							"module": this.require('spread/main.js'),
-							"selected-status": { theme: 'primary' }
-						}
-					],
-					[
-						"iconbutton",
-						{
-							"icon": "tabbar-message",
-							"content": "消息",
-							"module": this.require('message/main.js'),
-							"selected-status": { theme: 'primary' }
-						}
-					],
-					[
-						"iconbutton",
-						{
-							"icon": "tabbar-my",
-							"content": "我的",
-							"module": this.require('my/main.js'),
-							"selected-status": { theme: 'primary' }
-						}
+							"theme": "important",
+							"style": "height:40rem;overflow:hidden;"
+						},
+						[
+							[
+								"text",
+								{
+									"text": this.price > 0 ? '￥' + this.price : '免费'
+								}
+							]
+						]
 					]
 				]
 			]

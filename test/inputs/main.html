@@ -1,54 +1,16 @@
-<box theme="level5-bg">
-    <swiper>
-        <image src="/images/splash-screen.jpg" />
-        <image src="/images/splash-screen.jpg" />
-        <image src="/images/splash-screen.jpg" />
-        <image src="/images/splash-screen.jpg" />
-    </swiper>
-    <band style="height:60rem;">
-
-    </band>
-    <band theme="level1" style="height:100rem;margin-top:10rem;padding:10rem 20rem;">
-        <button theme="level4" style="line-height:80rem;border-radius:80rem;border:.5px solid @border-level4-color" e-tap="this.handleSearch">
-            <icon icon="common-search" />
-            <text>搜索老师、机构、课程</text>
-        </button>
-    </band>
-    <band theme="level1" style="height:100rem;margin-top:10rem;padding:10rem 20rem;">
-        <band>
-            <icon icon="home-hot" />
-            <text>热门课程</text>
-            <box>
-                <text>查看更多</text>
-                <icon icon="common-more" />
-            </box>
+<box d-tag="this.id" style="height:160rem;margin:20rem 0;overflow:hidden;">
+    <image d-src="this.image" style="width:200rem;height:100%;" />
+    <box style="display:inline-block;width:500rem;height:100%;padding-left:20rem;">
+        <band style="height:80rem;overflow:hidden;">
+            <text d-text="this.name" />
         </band>
-        <band key="hot"></band>
-    </band>
-    <band theme="level1" style="height:100rem;margin-top:10rem;padding:10rem 20rem;">
-        <band>
-            <icon icon="home-hot" />
-            <text>直播课程</text>
-            <box>
-                <text>查看更多</text>
-                <icon icon="common-more" />
-            </box>
+        <band theme="level3" style="height:40rem;line-height:40rem;font-size:24rem;overflow:hidden;">
+            <for list="this.remark" item="item">
+                <text d-text="item" theme="bg-level5" style="display:inline-block;border-radius:20rem;padding:0 20rem;margin-right:10rem;" />
+            </for>
         </band>
-        <band key="hot"></band>
-    </band>
-    <band theme="level1" style="height:100rem;margin-top:10rem;padding:10rem 20rem;">
-        <template src="./box-title.html" data="{ icon: 'home-hot', text: '热门课程' }" args="[1, 2]" />
-        <require src="./test" style="color:red;" />
-        <band key="hot"></band>
-    </band>
-    <band style="margin-top:10rem;">
-        <button e-tap="openTest">Open Test</button>
-    </band>
-    <tab host="<* >@host" selected-index="0">
-        <iconbutton icon="tabbar-home" content="首页" d-module="require('home/main.js')" d-selected-status="{ theme: 'primary' }" />
-        <iconbutton icon="tabbar-lesson" content="课程" d-module="require('lesson/main.js')" d-selected-status="{ theme: 'primary' }" />
-        <iconbutton icon="tabbar-spread" content="推广" d-module="require('spread/main.js')" d-selected-status="{ theme: 'primary' }" />
-        <iconbutton icon="tabbar-message" content="消息" d-module="require('message/main.js')" d-selected-status="{ theme: 'primary' }" />
-        <iconbutton icon="tabbar-my" content="我的" d-module="require('my/main.js')" d-selected-status="{ theme: 'primary' }" />
-    </tab>
+        <band theme="important" style="height:40rem;overflow:hidden;">
+            <text d-text="this.price > 0 ? '￥' + this.price : '免费'" />
+        </band>
+    </box>
 </box>
