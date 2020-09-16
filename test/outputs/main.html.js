@@ -212,6 +212,60 @@ return (
 						"Open Test"
 					]
 				]
+			],
+			[
+				"tab",
+				{
+					"host": "<* >@host",
+					"selected-index": "0"
+				},
+				[
+					[
+						"iconbutton",
+						{
+							"icon": "tabbar-home",
+							"content": "首页",
+							"module": this.require('home/main.js'),
+							"selected-status": { theme: 'primary' }
+						}
+					],
+					[
+						"iconbutton",
+						{
+							"icon": "tabbar-lesson",
+							"content": "课程",
+							"module": this.require('lesson/main.js'),
+							"selected-status": { theme: 'primary' }
+						}
+					],
+					[
+						"iconbutton",
+						{
+							"icon": "tabbar-spread",
+							"content": "推广",
+							"module": this.require('spread/main.js'),
+							"selected-status": { theme: 'primary' }
+						}
+					],
+					[
+						"iconbutton",
+						{
+							"icon": "tabbar-message",
+							"content": "消息",
+							"module": this.require('message/main.js'),
+							"selected-status": { theme: 'primary' }
+						}
+					],
+					[
+						"iconbutton",
+						{
+							"icon": "tabbar-my",
+							"content": "我的",
+							"module": this.require('my/main.js'),
+							"selected-status": { theme: 'primary' }
+						}
+					]
+				]
 			]
 		]
 	]
