@@ -1,4 +1,4 @@
-module.exports = function () {
+module.exports = function (scope) {
 
 
 return (
@@ -57,7 +57,7 @@ return (
 							"theme": "level4",
 							"style": "line-height:80rem;border-radius:80rem;border:.5px solid @border-level4-color",
 							"events": {
-								"tap": this.handleSearch
+								"tap": this.this.handleSearch.bind(this)
 							}
 						},
 						[
@@ -206,7 +206,7 @@ return (
 						"button",
 						{
 							"events": {
-								"tap": this.openTest
+								"tap": this.openTest.bind(this)
 							}
 						},
 						"Open Test"
