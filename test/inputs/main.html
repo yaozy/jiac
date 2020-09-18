@@ -1,12 +1,5 @@
 <box theme="level1" style="margin-top:10rem;padding:0 20rem;">
-    <band style="height:60rem;line-height:60rem;">
-        <icon theme="level2" d-icon="icon" style="position:absolute;font-size:50rem;" />
-        <text theme="level2" d-text="text" style="position:absolute;left:60rem;" />
-        <box layout="row" theme="level4" style="position:absolute;top:0;right:0;bottom:0;font-size:28rem;">
-            <text>查看更多</text>
-            <icon icon="common-more" />
-        </box>
-    </band>
+    <text d-text="'￥' + data.price" theme="primary" style="float:right;" />
     <box>
         <for list="data" item="item" index="index">
             <box d-tag="item.id" style="height:160rem;margin:20rem 0;overflow:hidden;">

@@ -10,63 +10,25 @@ return (
 		},
 		[
 			[
-				"band",
+				"text",
 				{
-					"style": "height:60rem;line-height:60rem;"
-				},
-				[
-					[
-						"icon",
-						{
-							"theme": "level2",
-							"icon": this.icon,
-							"style": "position:absolute;font-size:50rem;"
-						}
-					],
-					[
-						"text",
-						{
-							"theme": "level2",
-							"text": this.text,
-							"style": "position:absolute;left:60rem;"
-						}
-					],
-					[
-						"box",
-						{
-							"layout": "row",
-							"theme": "level4",
-							"style": "position:absolute;top:0;right:0;bottom:0;font-size:28rem;"
-						},
-						[
-							[
-								"text",
-								null,
-								"查看更多"
-							],
-							[
-								"icon",
-								{
-									"icon": "common-more"
-								}
-							]
-						]
-					]
-				]
+					"text": '￥' + this.data.price,
+					"theme": "primary",
+					"style": "float:right;"
+				}
 			],
 			[
 				"box",
 				null,
-				(function () {
+				(function (__for_list) {
 
-				    var __for_1_1 = data;
-				    var __for_1_2 = [];
+				    var __for_data = [];
 
-				    for (var index = 0, __for_1_len = __for_1_1.length; index < __for_1_len; index++)
+				    for (var index = 0, __for_len = __for_list.length; index < __for_len; index++)
 				    {
-				        var item = __for_1_1[index];
+				        var item = __for_list[index];
 
-				        __for_1_2.push.apply(__for_1_2,
+				        __for_data.push.apply(__for_data,
 							[
 								[
 									"box",
@@ -139,9 +101,9 @@ return (
 							] || []);
 				    }
 
-				    return __for_1_2;
+				    return __for_data;
 
-				}).call(this)
+				}).call(this, this.data)
 			]
 		]
 	]
