@@ -1,4 +1,4 @@
-module.exports = function (scope) {
+module.exports = function (data) {
 
 
 return (
@@ -12,9 +12,13 @@ return (
 			[
 				"text",
 				{
-					"text": '￥' + this.data.price,
+					"text": '￥' + data.price + this.fn(a, b),
 					"theme": "primary",
-					"style": "float:right;"
+					"style": "float:right;",
+					"bindings": {
+						"text":  function (data) { return data.a + 1 },
+						"value":  function (data) { return data.b + 2 }
+					}
 				}
 			],
 			[
@@ -103,7 +107,7 @@ return (
 
 				    return __for_data;
 
-				}).call(this, this.data)
+				}).call(this, data)
 			]
 		]
 	]

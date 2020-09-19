@@ -1,7 +1,7 @@
 <box theme="level1" style="margin-top:10rem;padding:0 20rem;">
-    <text d-text="'￥' + data.price" theme="primary" style="float:right;" />
+    <text d-text="'￥' + price + fn(a, b)" b-text="a + 1" b-value="b + 2" theme="primary" style="float:right;" />
     <box>
-        <for list="data" item="item" index="index">
+        <for list="$data" item="item" index="index">
             <box d-tag="item.id" style="height:160rem;margin:20rem 0;overflow:hidden;">
                 <image d-src="item.image" style="width:200rem;height:100%;" />
                 <box style="display:inline-block;width:500rem;height:100%;padding-left:20rem;">
