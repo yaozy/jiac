@@ -1,28 +1,29 @@
-<box theme="level1" margin-top="10rem" padding="0 20rem">
-    <box height="60rem" line-height="60rem">
-        <icon theme="level2" d-icon="icon" position="absolute" font-size="50rem" />
-        <text theme="level2" d-text="text" position="absolute" left="60rem" />
-        <box layout="row" theme="level4" position="absolute" top="0" right="0" bottom="0" font-size="28rem">
-            <text>查看更多</text>
-            <icon icon="common-more" />
+<page>
+    <header content="yaxi model page" />
+    <box layout="column" flex="auto">
+        <box layout="row" background-color="@bg-level2-color">
+            <button flex="auto" content="Append" e-tap="handleAppend" />
+            <button flex="auto" content="Replace" e-tap="handleReplace" />
+            <button flex="auto" content="Remove" e-tap="handleRemove" />
+            <button flex="auto" content="Reorder" e-tap="handleReorder" />
         </box>
-    </box>
-    <box>
-        <for list="$data" item="item" index="index">
-            <box layout="line" d-tag="$item.id" height="160rem" margin="20rem 0" overflow="hidden" e-tap="handleOpenDetail">
-                <image d-src="$item.image" width="200rem" height="100%" />
-                <box width="500rem" height="100%" padding-left="20rem">
-                    <box height="50rem" overflow="hidden">
-                        <text d-text="$item.name" />
-                    </box>
-                    <box theme="level4" height="70rem" font-size="24rem" overflow="hidden">
-                        <text d-text="$item.remark" />
-                    </box>
-                    <box theme="primary" height="40rem" overflow="hidden">
-                        <text d-text="'￥' + $item.price" />
-                    </box>
+        <modelbox flex="auto">
+            <box height="200rem">
+                <box width="50rem" height="120rem" line-height="120rem" position="absolute" top="0" left="20rem">
+                    <text b-text="$index" />
+                </box>
+                <box height="180rem" width="700rem" position="absolute" left="70rem" top="20rem">
+                    <text b-text="$item.name" width="200rem" />
+                    <text b-text="$item.value" />
+                    <text b-text="$item.computed" />
+                    <!-- <modelbox submodel="$item.submodel" item="$subitem" index="$subindex">
+                        <text b-text="'index:' + $index + '  subindex:' + $subindex + '  text:' + $subitem.text" />
+                    </modelbox> -->
+                    <databox b-data="$item.submodel">
+                        <text b-text="'index:' + $index + '  subindex:' + $subindex + '  text:' + $subitem.text" />
+                    </databox>
                 </box>
             </box>
-        </for>
+        </modelbox>
     </box>
-</box>
+</page>

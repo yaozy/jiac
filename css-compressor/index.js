@@ -21,7 +21,7 @@ module.exports = class CSSCompressor extends Compressor {
 
             }).catch(function (reason) {
                 
-                throw reason;
+                throw new Error(reason);
             });
         });
     }

@@ -63,7 +63,7 @@ loads.less = function (next, data, files, list, index) {
 
     }).catch(function (reason) {
         
-        throw reason;
+        throw new Error(reason);
     });
 }
 

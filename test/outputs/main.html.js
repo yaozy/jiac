@@ -1,167 +1,181 @@
-module.exports = function (data) {
+module.exports = function (owner, data) {
 
 
 return (
 	[
-		"box",
-		{
-			"theme": "level1",
-			"margin-top": "10rem",
-			"padding": "0 20rem"
-		},
+		"page",
+		null,
 		[
+			[
+				"header",
+				{
+					"content": "yaxi model page"
+				}
+			],
 			[
 				"box",
 				{
-					"height": "60rem",
-					"line-height": "60rem"
+					"layout": "column",
+					"flex": "auto"
 				},
 				[
-					[
-						"icon",
-						{
-							"theme": "level2",
-							"icon": data.icon,
-							"position": "absolute",
-							"font-size": "50rem"
-						}
-					],
-					[
-						"text",
-						{
-							"theme": "level2",
-							"text": data.text,
-							"position": "absolute",
-							"left": "60rem"
-						}
-					],
 					[
 						"box",
 						{
 							"layout": "row",
-							"theme": "level4",
-							"position": "absolute",
-							"top": "0",
-							"right": "0",
-							"bottom": "0",
-							"font-size": "28rem"
+							"background-color": "@bg-level2-color"
 						},
 						[
 							[
-								"text",
-								null,
-								"查看更多"
+								"button",
+								{
+									"flex": "auto",
+									"content": "Append",
+									"events": {
+										"tap": owner.handleAppend.bind(owner)
+									}
+								}
 							],
 							[
-								"icon",
+								"button",
 								{
-									"icon": "common-more"
+									"flex": "auto",
+									"content": "Replace",
+									"events": {
+										"tap": owner.handleReplace.bind(owner)
+									}
+								}
+							],
+							[
+								"button",
+								{
+									"flex": "auto",
+									"content": "Remove",
+									"events": {
+										"tap": owner.handleRemove.bind(owner)
+									}
+								}
+							],
+							[
+								"button",
+								{
+									"flex": "auto",
+									"content": "Reorder",
+									"events": {
+										"tap": owner.handleReorder.bind(owner)
+									}
 								}
 							]
 						]
-					]
-				]
-			],
-			[
-				"box",
-				null,
-				(function (__for_list) {
-
-				    var __for_data = [];
-
-				    for (var $index = 0, __for_len = __for_list.length; $index < __for_len; $index++)
-				    {
-				        var $item = __for_list[$index];
-
-				        __for_data.push.apply(__for_data,
+					],
+					[
+						"modelbox",
+						{
+							"flex": "auto",
+							"scope": ""
+						},
+						[
 							[
+								"box",
+								{
+									"height": "200rem"
+								},
 								[
-									"box",
-									{
-										"layout": "line",
-										"tag": $item.id,
-										"height": "160rem",
-										"margin": "20rem 0",
-										"overflow": "hidden",
-										"events": {
-											"tap": this.handleOpenDetail.bind(this)
-										}
-									},
 									[
+										"box",
+										{
+											"width": "50rem",
+											"height": "120rem",
+											"line-height": "120rem",
+											"position": "absolute",
+											"top": "0",
+											"left": "20rem"
+										},
 										[
-											"image",
-											{
-												"src": $item.image,
-												"width": "200rem",
-												"height": "100%"
-											}
-										],
-										[
-											"box",
-											{
-												"width": "500rem",
-												"height": "100%",
-												"padding-left": "20rem"
-											},
 											[
-												[
-													"box",
-													{
-														"height": "50rem",
-														"overflow": "hidden"
-													},
-													[
-														[
-															"text",
-															{
-																"text": $item.name
-															}
-														]
-													]
-												],
-												[
-													"box",
-													{
-														"theme": "level4",
-														"height": "70rem",
-														"font-size": "24rem",
-														"overflow": "hidden"
-													},
-													[
-														[
-															"text",
-															{
-																"text": $item.remark
-															}
-														]
-													]
-												],
-												[
-													"box",
-													{
-														"theme": "primary",
-														"height": "40rem",
-														"overflow": "hidden"
-													},
-													[
-														[
-															"text",
-															{
-																"text": '￥' + $item.price
-															}
-														]
-													]
-												]
+												"text",
+												{
+													"bindings": {
+														"text": "$index"
+													}
+												}
+											]
+										]
+									],
+									[
+										"box",
+										{
+											"height": "180rem",
+											"width": "700rem",
+											"position": "absolute",
+											"left": "70rem",
+											"top": "20rem"
+										},
+										[
+											[
+												"text",
+												{
+													"width": "200rem",
+													"bindings": {
+														"text": "$item.name"
+													}
+												}
+											],
+											[
+												"text",
+												{
+													"bindings": {
+														"text": "$item.value"
+													}
+												}
+											],
+											[
+												"text",
+												{
+													"bindings": {
+														"text": "$item.computed"
+													}
+												}
+											],
+											[
+												"databox",
+												{
+													"scope": "",
+													"bindings": {
+														"data": "$item.submodel"
+													}
+												},
+												function (controls, __loop_data, __loop_scope) {
+
+
+												    for (var $index = 0, __loop_len = __loop_data.length; $index < __loop_len; $index++)
+												    {
+												        var $item = __loop_data[$index];
+
+												        this.loadTemplate(controls, __loop_scope, $index, $item,
+															[
+																[
+																	"text",
+																	{
+																		"bindings": {
+																			"text":  function ($pipe) { return 'index:' + this.$index + '  subindex:' + this.$top.$subindex + '  text:' + this.$top.$subitem.text }
+																		}
+																	}
+																]
+															]
+														);
+												    }
+
+												    // end function
+												}
 											]
 										]
 									]
 								]
-							] || []);
-				    }
-
-				    return __for_data;
-
-				}).call(this, data)
+							]
+						]
+					]
+				]
 			]
 		]
 	]

@@ -52,14 +52,14 @@ module.exports = class Watcher {
         {
             if (!convertDataFn && !convertFileFn)
             {
-                throw 'plugin convertDataFn and convertFileFn can\'t be null both!';
+                throw new Error('plugin convertDataFn and convertFileFn can\'t be null both!');
             }
 
             this.plugins.push(regexPattern, convertDataFn, convertFileFn);
             return this;
         }
 
-        throw 'plugin regexPattern must be a Regex!';
+        throw new Error('plugin regexPattern must be a Regex!');
     }
 
 
@@ -71,7 +71,7 @@ module.exports = class Watcher {
             return this;
         }
 
-        throw 'template regexPattern must be a Regex!';
+        throw new Error('template regexPattern must be a Regex!');
     }
 
 

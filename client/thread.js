@@ -110,7 +110,7 @@ jiac.Thread = (function () {
                     }
                     else
                     {
-                        throw this.statusText;
+                        throw new Error(url + '\n' + this.statusText);
                     }
                     
                     this.onreadystatechange = null;
@@ -181,6 +181,7 @@ jiac.Thread = (function () {
                 {
                     if (typeof console !== 'undefined')
                     {
+                        console.error(e.message || e);
                         console.error(url);
                     }
     

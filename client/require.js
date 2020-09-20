@@ -113,7 +113,7 @@
                 }
                 else
                 {
-                    throw this.statusText;
+                    throw new Error(url + '\n' + this.statusText);
                 }
                 
                 this.onreadystatechange = null;
@@ -154,6 +154,7 @@
                 if (typeof console !== 'undefined')
                 {
                     console.error(url);
+                    console.error(e);
                 }
 
                 throw e;
