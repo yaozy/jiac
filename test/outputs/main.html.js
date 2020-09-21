@@ -1,5 +1,6 @@
-module.exports = function (owner, data) {
+module.exports = function ($owner, $data, $model) {
 
+if (!$owner) throw new Error("template must input $owner argument! file: d:\\dev\\jiac\\test\\inputs\\main.html")
 
 return (
 	[
@@ -13,10 +14,31 @@ return (
 				}
 			],
 			[
+				"databox",
+				null,
+				function (template, __data_list, __data_scope) {
+
+					for (var $index = 0, __data_length = __data_list.length; $index < __data_length; $index++)
+					{
+						var $item = __data_list[$index];
+
+						template($index, $item,
+							[
+								"text",
+								null
+							]
+						);
+					}
+
+					// end function
+				}
+			],
+			[
 				"box",
 				{
 					"layout": "column",
-					"flex": "auto"
+					"flex": "auto",
+					"tag": $owner.pipe("round: 2")($data.text + ' | round:2')
 				},
 				[
 					[
@@ -31,9 +53,7 @@ return (
 								{
 									"flex": "auto",
 									"content": "Append",
-									"events": {
-										"tap": owner.handleAppend.bind(owner)
-									}
+									"e-tap": "handleAppend"
 								}
 							],
 							[
@@ -41,9 +61,7 @@ return (
 								{
 									"flex": "auto",
 									"content": "Replace",
-									"events": {
-										"tap": owner.handleReplace.bind(owner)
-									}
+									"e-tap": "handleReplace"
 								}
 							],
 							[
@@ -51,9 +69,7 @@ return (
 								{
 									"flex": "auto",
 									"content": "Remove",
-									"events": {
-										"tap": owner.handleRemove.bind(owner)
-									}
+									"e-tap": "handleRemove"
 								}
 							],
 							[
@@ -61,119 +77,128 @@ return (
 								{
 									"flex": "auto",
 									"content": "Reorder",
-									"events": {
-										"tap": owner.handleReorder.bind(owner)
-									}
+									"e-tap": "handleReorder"
 								}
 							]
 						]
 					],
 					[
-						"modelbox",
+						"databox",
 						{
+							"type": "model",
 							"flex": "auto",
-							"scope": ""
+							"data": $model
 						},
-						[
-							[
-								"box",
-								{
-									"height": "200rem"
-								},
-								[
+						function (template, __data_list, __data_scope) {
+
+							for (var $index = 0, __data_length = __data_list.length; $index < __data_length; $index++)
+							{
+								var $item = __data_list[$index];
+
+								template($index, $item,
 									[
 										"box",
 										{
-											"width": "50rem",
-											"height": "120rem",
-											"line-height": "120rem",
-											"position": "absolute",
-											"top": "0",
-											"left": "20rem"
+											"height": "200rem"
 										},
 										[
 											[
-												"text",
+												"box",
 												{
-													"bindings": {
-														"text": "$index"
-													}
-												}
-											]
-										]
-									],
-									[
-										"box",
-										{
-											"height": "180rem",
-											"width": "700rem",
-											"position": "absolute",
-											"left": "70rem",
-											"top": "20rem"
-										},
-										[
-											[
-												"text",
-												{
-													"width": "200rem",
-													"bindings": {
-														"text": "$item.name"
-													}
-												}
-											],
-											[
-												"text",
-												{
-													"bindings": {
-														"text": "$item.value"
-													}
-												}
-											],
-											[
-												"text",
-												{
-													"bindings": {
-														"text": "$item.computed"
-													}
-												}
-											],
-											[
-												"databox",
-												{
-													"scope": "",
-													"bindings": {
-														"data": "$item.submodel"
-													}
+													"width": "50rem",
+													"height": "120rem",
+													"line-height": "120rem",
+													"position": "absolute",
+													"top": "0",
+													"left": "20rem"
 												},
-												function (controls, __loop_data, __loop_scope) {
+												[
+													[
+														"text",
+														{
+															"bindings": {
+																"text":  function ($pipe) { return $item.$index }
+															}
+														}
+													]
+												]
+											],
+											[
+												"box",
+												{
+													"height": "180rem",
+													"width": "700rem",
+													"position": "absolute",
+													"left": "70rem",
+													"top": "20rem"
+												},
+												[
+													[
+														"text",
+														{
+															"width": "200rem",
+															"bindings": {
+																"text":  function ($pipe) { return $item.name }
+															}
+														}
+													],
+													[
+														"text",
+														{
+															"bindings": {
+																"text":  function ($pipe) { return $item.value }
+															}
+														}
+													],
+													[
+														"text",
+														{
+															"bindings": {
+																"text":  function ($pipe) { return $item.computed }
+															}
+														}
+													],
+													[
+														"databox",
+														{
+															"type": "model",
+															"b-data": "$item.submodel",
+															"item": "$subitem",
+															"index": "$subindex"
+														},
+														function (template, __data_list, __data_scope) {
 
+															var $item = __data_scope[0];
+															var $index = __data_scope[1];
 
-												    for (var $index = 0, __loop_len = __loop_data.length; $index < __loop_len; $index++)
-												    {
-												        var $item = __loop_data[$index];
+															for (var $subindex = 0, __data_length = __data_list.length; $subindex < __data_length; $subindex++)
+															{
+																var $subitem = __data_list[$subindex];
 
-												        this.loadTemplate(controls, __loop_scope, $index, $item,
-															[
-																[
-																	"text",
-																	{
-																		"bindings": {
-																			"text":  function ($pipe) { return 'index:' + this.$index + '  subindex:' + this.$top.$subindex + '  text:' + this.$top.$subitem.text }
+																template($subindex, $subitem,
+																	[
+																		"text",
+																		{
+																			"bindings": {
+																				"text":  function ($pipe) { return $pipe("round:2")('index:' + $item.$index + '  subindex:' + $subitem.$index + '  text:' + $subitem.text); }
+																			}
 																		}
-																	}
-																]
-															]
-														);
-												    }
+																	]
+																);
+															}
 
-												    // end function
-												}
+															// end function
+														}
+													]
+												]
 											]
 										]
 									]
-								]
-							]
-						]
+								);
+							}
+
+							// end function
+						}
 					]
 				]
 			]
