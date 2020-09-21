@@ -1,6 +1,6 @@
 {
   "name": "jiac",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "web module and compress tool",
   "main": "build.js",
   "directories": {

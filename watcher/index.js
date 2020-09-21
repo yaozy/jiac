@@ -156,7 +156,7 @@ module.exports = class Watcher {
                 {
                     if (any = plugins[index + 1])
                     {
-                        data = any(data);
+                        data = any(data, sourceFile);
                     }
 
                     if (plugins[index + 2])
