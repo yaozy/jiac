@@ -7,210 +7,91 @@ return (
 		"page",
 		null,
 		[
+			require("../components/header.html")($owner, $data, $model),
 			[
-				"header",
+				"masklayer",
 				{
-					"content": "yaxi model page"
-				}
-			],
-			[
-				"databox",
-				null,
-				function (template, __data_list, __data_scope) {
-
-					for (var $index = 0, __data_length = __data_list.length; $index < __data_length; $index++)
-					{
-						// 添加作用域解决循环变量绑定变化的问题
-						(function () {
-
-						var $item = __data_list[$index];
-
-						template($index, $item,
-							["text", null, "databox node can only include one child node!"]
-						);
-
-						})();
-					}
-
-					// end function
+					"text": $model.text
 				}
 			],
 			[
 				"box",
 				{
-					"layout": "column",
-					"flex": "auto",
-					"tag": $owner.pipe("round: 2")($data.text + ' | round:2')
+					"width": "550rem",
+					"absolute": "middle center",
+					"padding": "50rem",
+					"theme": "bg-standard"
 				},
 				[
 					[
-						"box",
+						"textbox",
 						{
-							"layout": "row",
-							"background-color": "@bg-level2-color"
-						},
-						[
-							[
-								"button",
-								{
-									"flex": "auto",
-									"content": "Append",
-									"e-tap": "handleAppend"
-								}
-							],
-							[
-								"button",
-								{
-									"flex": "auto",
-									"content": "Replace",
-									"e-tap": "handleReplace"
-								}
-							],
-							[
-								"button",
-								{
-									"flex": "auto",
-									"content": "Remove",
-									"e-tap": "handleRemove"
-								}
-							],
-							[
-								"button",
-								{
-									"flex": "auto",
-									"content": "Reorder",
-									"e-tap": "handleReorder"
-								}
-							]
-						]
+							"placeholder": "姓名",
+							"width": "100%",
+							"text-align": "center",
+							"bindings": {
+								"value":  function () { return $model.name },
+								"onchange":  function (value) { $model.name = value; }
+							}
+						}
 					],
 					[
-						"databox",
+						"textbox",
 						{
-							"type": "model",
-							"flex": "auto",
-							"data": $model
-						},
-						function (template, __data_list, __data_scope) {
-
-							for (var $index = 0, __data_length = __data_list.length; $index < __data_length; $index++)
-							{
-								// 添加作用域解决循环变量绑定变化的问题
-								(function () {
-
-								var $item = __data_list[$index];
-
-								template($index, $item,
-									[
-										"box",
-										{
-											"height": "200rem"
-										},
-										[
-											[
-												"box",
-												{
-													"width": "50rem",
-													"height": "120rem",
-													"line-height": "120rem",
-													"position": "absolute",
-													"top": "0",
-													"left": "20rem"
-												},
-												[
-													[
-														"text",
-														{
-															"bindings": {
-																"text":  function () { return $item.$index }
-															}
-														}
-													]
-												]
-											],
-											[
-												"box",
-												{
-													"height": "180rem",
-													"width": "700rem",
-													"position": "absolute",
-													"left": "70rem",
-													"top": "20rem"
-												},
-												[
-													[
-														"text",
-														{
-															"width": "200rem",
-															"bindings": {
-																"text":  function () { return $item.name }
-															}
-														}
-													],
-													[
-														"text",
-														{
-															"bindings": {
-																"text":  function () { return $item.value }
-															}
-														}
-													],
-													[
-														"text",
-														{
-															"bindings": {
-																"text":  function () { return $item.computed }
-															}
-														}
-													],
-													[
-														"databox",
-														{
-															"type": "model",
-															"b-data": "$item.submodel",
-															"item": "$subitem",
-															"index": "$subindex"
-														},
-														function (template, __data_list, __data_scope) {
-
-															var $index = __data_scope[0];
-															var $item = __data_scope[1];
-
-															for (var $subindex = 0, __data_length = __data_list.length; $subindex < __data_length; $subindex++)
-															{
-																// 添加作用域解决循环变量绑定变化的问题
-																(function () {
-
-																var $subitem = __data_list[$subindex];
-
-																template($subindex, $subitem,
-																	[
-																		"text",
-																		{
-																			"bindings": {
-																				"text":  function ($pipe) { return $pipe("round:2")('index:' + $item.$index + '  subindex:' + $subitem.$index + '  text:' + $subitem.text); }
-																			}
-																		}
-																	]
-																);
-
-																})();
-															}
-
-															// end function
-														}
-													]
-												]
-											]
-										]
-									]
-								);
-
-								})();
+							"placeholder": "性别",
+							"width": "100%",
+							"text-align": "center",
+							"bindings": {
+								"value":  function () { return $model.gendle },
+								"onchange":  function (value) { $model.gendle = value; }
 							}
-
-							// end function
 						}
+					],
+					[
+						"textbox",
+						{
+							"placeholder": "电话",
+							"width": "100%",
+							"text-align": "center",
+							"bindings": {
+								"value":  function () { return $model.tel },
+								"onchange":  function (value) { $model.tel = value; }
+							}
+						}
+					],
+					[
+						"textbox",
+						{
+							"placeholder": "地址",
+							"width": "100%",
+							"text-align": "center",
+							"bindings": {
+								"value":  function () { return $model.address },
+								"onchange":  function (value) { $model.address = value; }
+							}
+						}
+					],
+					[
+						"textbox",
+						{
+							"placeholder": "楼宇门牌",
+							"width": "100%",
+							"text-align": "center",
+							"bindings": {
+								"value":  function () { return $model.house },
+								"onchange":  function (value) { $model.house = value; }
+							}
+						}
+					],
+					[
+						"button",
+						{
+							"margin-top": "50rem",
+							"events": {
+								"tap": $owner.handleOK.bind($owner)
+							}
+						},
+						"确认"
 					]
 				]
 			]
