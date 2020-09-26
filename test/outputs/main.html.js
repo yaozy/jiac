@@ -83,7 +83,7 @@ return (
 																"text",
 																{
 																	"bindings": {
-																		"text":  function () { return ("$index" in $item ? $item.$index : $index) + $item.name }
+																		"text":  function () { return ($item.$index != null ? $item.$index : $index) + $item.name }
 																	}
 																}
 															]
@@ -123,7 +123,7 @@ return (
 																			"padding": "0 20rem",
 																			"margin-right": "10rem",
 																			"bindings": {
-																				"text":  function () { return ("$index" in $item ? $item.$index : $index) + $remark }
+																				"text":  function () { return ($item.$index != null ? $item.$index : $index) + $remark }
 																			}
 																		}
 																	]
