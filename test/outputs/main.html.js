@@ -1,6 +1,4 @@
-module.exports = function ($owner, $data, $model) {
-
-if (!$owner) throw new Error("template must input $owner argument! file: d:\\dev\\jiac\\test\\inputs\\main.html")
+module.exports = function ($data, $model) {
 
 return (
 	[
@@ -52,7 +50,7 @@ return (
 											"margin": "20rem 0",
 											"overflow": "hidden",
 											"events": {
-												"tap": $owner.handleOpenDetail.bind($owner)
+												"tap": this.handleOpenDetail.bind(this)
 											}
 										},
 										[
@@ -83,7 +81,7 @@ return (
 																"text",
 																{
 																	"bindings": {
-																		"text":  function () { return ($item.$index != null ? $item.$index : $index) + $item.name }
+																		"text":  function () { return ($item && $item.$index != null ? $item.$index : $index) + $item.name }
 																	}
 																}
 															]
@@ -123,7 +121,7 @@ return (
 																			"padding": "0 20rem",
 																			"margin-right": "10rem",
 																			"bindings": {
-																				"text":  function () { return ($item.$index != null ? $item.$index : $index) + $remark }
+																				"text":  function () { return ($item && $item.$index != null ? $item.$index : $index) + $remark }
 																			}
 																		}
 																	]
