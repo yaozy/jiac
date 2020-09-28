@@ -127,11 +127,11 @@ return (
 																	]
 																);
 
-																})();
+																}).call(this);
 															}
 
 															// end function
-														}
+														}.bind(this)
 													],
 													[
 														"box",
@@ -157,11 +157,11 @@ return (
 									]
 								);
 
-								})();
+								}).call(this);
 							}
 
 							// end function
-						}
+						}.bind(this)
 					]
 				]
 			]
